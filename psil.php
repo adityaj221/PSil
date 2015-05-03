@@ -69,6 +69,8 @@ Class PSil{
 		if(preg_match_all($this->util->preg_match_all_bracket_string, $this->exp, $match_result)){
 			foreach ($match_result[1] as $key) {
 				$key = preg_split("/\s+/", trim($key));
+				// Check if the expression is a single bracketed expression.
+				// If yes, clean the expression by removing the brackets.
 				if(count($key == 1) && preg_match($this->util->check_number_string, $this->exp)){
 					$this->exp = preg_replace('/\(' . preg_quote($key[0], '/') . '\)/', $key[0], $this->exp);
 					continue;
