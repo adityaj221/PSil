@@ -1,5 +1,5 @@
 <?php
-
+error_reporting(E_ERROR | E_PARSE);
 $input_file = "input.txt";
 $file = file_get_contents($input_file, true);
 $file = preg_replace("/\n/", " ", $file);
@@ -50,7 +50,7 @@ Class PSil{
 		$this->exp = $expression;
 		if($this->check_exp()){
 			$val = $this->parse_exp();
-			if($val !== false){
+			if($val !== false && !error_get_last()){
 				return $val;
 			}
 		}
@@ -68,7 +68,7 @@ Class PSil{
 		// Validate if the string consists of bracketed expressions and check for each such bracketed expression(in case of nesting).
 		if(preg_match_all($this->util->preg_match_all_bracket_string, $this->exp, $match_result)){
 			foreach ($match_result[1] as $key) {
-				$key = split(" ", trim($key));
+				$key = preg_split("/\s+/", trim($key));
 				if(count($key == 1) && preg_match($this->util->check_number_string, $this->exp)){
 					$this->exp = preg_replace('/\(' . preg_quote($key[0], '/') . '\)/', $key[0], $this->exp);
 					continue;
@@ -135,7 +135,7 @@ Class PSil{
 						// Check if the sub-expression exists in the associative array and if its value is not null.
 						if(array_key_exists($new_val, $this->util->binding_array) && $this->util->binding_array[$new_val] != ""){
 							// Replace the sub-expression with its value from the array.
-							$sub_exp = split(" ", trim($new_val));
+							$sub_exp = preg_split("/\s+/", trim($new_val));
 							// Check if mathematical symbol.
 							if(in_array($sub_exp[0], $this->util->allowed_symbols)){
 								$arr_val = preg_replace('/\(\\' . $new_val . '\)/', $this->util->binding_array[$new_val], $arr_val);
@@ -155,7 +155,7 @@ Class PSil{
 				continue;
 			}
 			// If the expression doesn't consists of the sub-expression, Split the expression.
-			$exp = split(" ", trim($arr_val));
+			$exp = preg_split("/\s+/", trim($arr_val));
 			// Execute the operation to be performed on the expression.
 			// Store the result in the associative array against the expression as the key.
 			// This will enable to replace the subexpression with its value in the parent expression,if any.
